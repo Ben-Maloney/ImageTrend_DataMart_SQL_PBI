@@ -1,0 +1,1 @@
+These SQL snippets come from ImageTrend's DataMart documentation.  It is apparent that reverse engineering the database will be required for any customer who wishes to report out of a DataMart instance.
