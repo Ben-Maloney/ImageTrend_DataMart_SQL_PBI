@@ -1,8 +1,19 @@
 SELECT
+
+
+    ----------------------------
     Fact_Fire.Agency_Shortname as agency,
     Fact_Fire.CreatedOn AS 'Report CreatedOn',
     dar.CreatedOn as 'Action CreatedOn',
     dar.ModifiedOn as 'Action ModifiedOn',
+
+    -----------------------------------
+    dap.Apparatus_Personnel_Full_Name AS personnel_name,
+    dap.Apparatus_Personnel_Rank_Or_Grade AS personnel_rank,
+    dap.Apparatus_Personnel_Role AS personnel_role,
+    dap.Apparatus_Personnel_Badge_Number AS badge_number,
+
+    -----------------------------------
 
     dar.Apparatus_Resource_Vehicle_Call_Sign as 'apparatus',
     dar.Apparatus_Resource_Primary_Action_Taken as 'primary action taken',
@@ -27,6 +38,14 @@ FROM [Elite_DWPortland].[DwFire].[Fact_Fire]
     INNER JOIN [Elite_DWPortland].[DwFire].[Dim_Fire] ON Fact_Fire.Dim_Fire_FK = Dim_Fire.Dim_Fire_PK
     JOIN [Elite_DWPortland].[DwFire].[Bridge_Fire_ApparatusResources] bfar ON Fact_Fire.Fact_Fire_PK = bfar.Fact_Fire_PK
     JOIN [Elite_DWPortland].[DwFire].[Dim_ApparatusResources] dar ON bfar.Dim_ApparatusResources_PK = dar.Dim_ApparatusResources_PK
+
+
+
+    JOIN [Elite_DWPortland].[DwFire].[Bridge_ApparatusResources_ApparatusPersonnel] brap 
+        ON dar.Dim_ApparatusResources_PK = brap.Dim_ApparatusResources_PK
+    JOIN [Elite_DWPortland].[DwFire].[Dim_ApparatusPersonnel] dap 
+        ON brap.Dim_ApparatusPersonnel_PK = dap.Dim_ApparatusPersonnel_PK
+
 
 WHERE
     Fact_Fire.CreatedOn >= '2024-08-19'
