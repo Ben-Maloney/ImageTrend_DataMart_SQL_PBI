@@ -1,11 +1,17 @@
-# ImageTrend_DataMart_SQL_PBI
+## Repository Overview and Usage
 
-```txt
+ - My organization is Portland Fire & Rescue, City of Portland.
+ - My team uses Power BI for data analysis and reporting.
+ - Our database is Microsoft SQL Server and is READ-ONLY.  DO NOT ALTER OR CREATE TABLES.
+ - We use ImageTrend SaaS software for data collection of NFIRS "fire reports" and NEMSIS "patient care reports"
+ - We pay for ImageTrend's DataMart feature which periodically syncronizes an on-site database with ImageTrend's SaaS database for data analysis and reporting.
+ - For many reports, we typically build custom SQL queries to extract the data we need from the on-site database, then we copy-paste the query into Power BI for analysis and reporting like this:
 
-models:
-
-hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q8_K_XL
-
-gpt-oss:120b
-
+```m
+let
+    Source = Sql.Database("pfbsql3", "Elite_DWPortland", [Query="
+ -- SQL query goes here
+    "])
+in
+    Source
 ```

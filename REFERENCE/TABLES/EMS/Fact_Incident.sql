@@ -1,55 +1,81 @@
-SELECT TOP (1000) [Fact_Incident_PK]
-      ,[Incident_Transaction_GUID_Internal]
+SELECT TOP (100) [Fact_Incident_PK]
       ,[Agency_ID_Internal]
-      ,[Dim_Agency_FK]
-      ,[Dim_Airway_FK]
-      ,[Dim_CardiacArrest_FK]
-      ,[Dim_Disposition_FK]
-      ,[Dim_Incident_FK]
-      ,[Dim_Patient_FK]
-      ,[Dim_Response_FK]
-      ,[Dim_Scene_FK]
-      ,[Dim_Situation_FK]
-      ,[Dim_VitalsHighLowInitLast_FK]
-      ,[Dim_Outcome_FK]
-      ,[Dim_PatientHistory_FK]
-      ,[Dim_Payment_FK]
-      ,[Dim_InjuryDetails_FK]
+      ,[Incident_Transaction_GUID_Internal]
+      ,[CAD_Incident_ID_Internal]
+      ,[CAD_ID_FK] -- joins [DwEms].[Dim_EMS_CAD] ([Dim_CAD_PK])
+
+      ,[CAD_ID1_FK] -- no explicit join in datamart_ems.sql
+      ,[CAD_Incident_ID1_Internal]
+
+      ,[Dim_Agency_FK] -- joins [DwEms].[Dim_Agency] ([Dim_Agency_PK])
+      ,[Dim_Airway_FK] -- joins [DwEms].[Dim_Airway] ([Dim_Airway_PK])
+      ,[Dim_CardiacArrest_FK] -- joins [DwEms].[Dim_CardiacArrest] ([Dim_Cardiac_Arrest_PK])
+      ,[Dim_Disposition_FK] -- joins [DwEms].[Dim_Disposition] ([Dim_Disposition_PK])
+      ,[Dim_Incident_FK] -- joins [DwEms].[Dim_Incident] ([Dim_Incident_PK])
+      ,[Dim_Patient_FK] -- joins [DwEms].[Dim_Patient] ([Dim_Patient_PK])
+      ,[Dim_Response_FK] -- joins [DwEms].[Dim_Response] ([Dim_Response_PK])
+      ,[Dim_Scene_FK] -- joins [DwEms].[Dim_Scene] ([Dim_Scene_PK])
+      ,[Dim_Situation_FK] -- joins [DwEms].[Dim_Situation] ([Dim_Situation_PK])
+      ,[Dim_VitalsHighLowInitLast_FK] -- joins [DwEms].[Dim_VitalsHighLowInitLast] ([Dim_VitalsHighLowInitLast_PK])
+      ,[Dim_Outcome_FK] -- joins [DwEms].[Dim_Outcome] ([Dim_Outcome_PK])
+      ,[Dim_PatientHistory_FK] -- joins [DwEms].[Dim_PatientHistory] ([Dim_PatientHistory_PK])
+      ,[Dim_Payment_FK] -- joins [DwEms].[Dim_Payment] ([Dim_Payment_PK])
+      ,[Dim_InjuryDetails_FK] -- joins [DwEms].[Dim_InjuryDetails] ([Dim_Injury_Details_PK])
+      ,[Dim_Incident_Date_FK] -- joins [dbo].[DSV_Dim_Incident_Date] ([Dim_Incident_Date_FK])
+      ,[Dim_Incident_TimeOfDay_FK] -- joins [dbo].[DSV_Dim_Incident_Time_Of_Day] ([Dim_Incident_Time_Of_Day_PK])
+
+
+      ,[Dim_PatientFluids_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_PSAP_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_PSAP_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Dispatch_Notified_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Dispatch_Notified_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Notified_By_Dispatch_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Notified_By_Dispatch_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Dispatch_Acknowledged_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Dispatch_Acknowledged_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Enroute_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Enroute_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Arrived_On_Scene_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Arrived_On_Scene_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Arrived_At_Patient_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Arrived_At_Patient_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Transfer_Of_Patient_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Transfer_Of_Patient_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Left_Scene_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Left_Scene_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Arrival_At_Destination_Landing_Area_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Arrival_At_Destination_Landing_Area_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Patient_Arrived_At_Destination_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Patient_Arrived_At_Destination_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Destination_Patient_Transfer_Of_Care_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Destination_Patient_Transfer_Of_Care_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Back_In_Service_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Back_In_Service_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Canceled_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Canceled_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Back_At_Home_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Unit_Back_At_Home_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_EMS_Call_Completed_Date_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_EMS_Call_Completed_TimeOfDay_FK] -- no explicit join in datamart_ems.sql
+      ,[Dim_Narrative_FK] -- joins [DwEms].[Dim_Narrative] ([Dim_Narrative_PK])
+      ,[Dim_Incident_One_To_One_PK] -- joins [DwEms].[Dim_Incident_One_To_One] ([Dim_Incident_One_To_One_PK])
+      ,[Dim_IncidentSupplementalQuestions_FK] -- joins [DwEms].[Dim_IncidentSupplementalQuestions] ([Dim_IncidentSupplementalQuestions_PK])
+      ,[Dim_IncidentSupplementalQuestions1_FK] -- joins [DwEms].[Dim_IncidentSupplementalQuestions1] ([Dim_IncidentSupplementalQuestions1_PK])
+      ,[Dim_IncidentSupplementalQuestions2_FK] -- joins [DwEms].[Dim_IncidentSupplementalQuestions2] ([Dim_IncidentSupplementalQuestions2_PK])
+
+      ,[Incident_Agency_Short_Name]
+      ,[Incident_Form_Number]
       ,[Incident_Validity_Score]
-      ,[Dim_Incident_Date_FK]
-      ,[Dim_Incident_TimeOfDay_FK]
-      ,[Dim_PSAP_Date_FK]
-      ,[Dim_PSAP_TimeOfDay_FK]
-      ,[Dim_Dispatch_Notified_Date_FK]
-      ,[Dim_Dispatch_Notified_TimeOfDay_FK]
-      ,[Dim_Unit_Notified_By_Dispatch_Date_FK]
-      ,[Dim_Unit_Notified_By_Dispatch_TimeOfDay_FK]
-      ,[Dim_Dispatch_Acknowledged_Date_FK]
-      ,[Dim_Dispatch_Acknowledged_TimeOfDay_FK]
-      ,[Dim_Unit_Enroute_Date_FK]
-      ,[Dim_Unit_Enroute_TimeOfDay_FK]
-      ,[Dim_Unit_Arrived_On_Scene_Date_FK]
-      ,[Dim_Unit_Arrived_On_Scene_TimeOfDay_FK]
-      ,[Dim_Arrived_At_Patient_Date_FK]
-      ,[Dim_Arrived_At_Patient_TimeOfDay_FK]
-      ,[Dim_Transfer_Of_Patient_Date_FK]
-      ,[Dim_Transfer_Of_Patient_TimeOfDay_FK]
-      ,[Dim_Unit_Left_Scene_Date_FK]
-      ,[Dim_Unit_Left_Scene_TimeOfDay_FK]
-      ,[Dim_Arrival_At_Destination_Landing_Area_Date_FK]
-      ,[Dim_Arrival_At_Destination_Landing_Area_TimeOfDay_FK]
-      ,[Dim_Patient_Arrived_At_Destination_Date_FK]
-      ,[Dim_Patient_Arrived_At_Destination_TimeOfDay_FK]
-      ,[Dim_Destination_Patient_Transfer_Of_Care_Date_FK]
-      ,[Dim_Destination_Patient_Transfer_Of_Care_TimeOfDay_FK]
-      ,[Dim_Unit_Back_In_Service_Date_FK]
-      ,[Dim_Unit_Back_In_Service_TimeOfDay_FK]
-      ,[Dim_Unit_Canceled_Date_FK]
-      ,[Dim_Unit_Canceled_TimeOfDay_FK]
-      ,[Dim_Unit_Back_At_Home_Date_FK]
-      ,[Dim_Unit_Back_At_Home_TimeOfDay_FK]
-      ,[Dim_EMS_Call_Completed_Date_FK]
-      ,[Dim_EMS_Call_Completed_TimeOfDay_FK]
+
+      ,[Patient_Age_In_Years]
+      ,[Patient_Age_In_Months]
+      ,[Patient_Age_In_Weeks]
+      ,[Patient_Age_In_Days]
+      ,[Patient_Weight_In_Kilograms]
+      ,[Patient_Weight_In_Pounds]
+
+      -- Target times (these are not used, but are included for completeness)
       ,[Incident_UnitArrivedAtPatient_To_PatientArrivedAtDestination_In_Seconds]
       ,[Incident_UnitArrivedAtPatient_To_PatientArrivedAtDestination_In_Minutes]
       ,[Incident_UnitNotifiedByDispatch_To_UnitEnRoute_In_Seconds]
@@ -173,9 +199,6 @@ SELECT TOP (1000) [Fact_Incident_PK]
       ,[Incident_UnitArrivedOnScene_To_UnitLeftScene_Range_In_Minutes]
       ,[Incident_UnitLeftScene_To_PatientArrivedAtDestination_Range_In_Minutes]
       ,[Incident_PatientArrivedAtDestination_To_UnitLeftDestination_Range_In_Minutes]
-      ,[CreatedOn]
-      ,[Dim_Narrative_FK]
-      ,[Dim_Incident_One_To_One_PK]
       ,[Incident_UnitNotifiedByDispatch_To_UnitEnRoute_Range_In_Minutes_Sort_Order]
       ,[Incident_UnitEnRoute_To_UnitArrivedOnScene_Range_In_Minutes_Sort_Order]
       ,[Incident_UnitArrivedOnScene_To_UnitLeftScene_Range_In_Minutes_Sort_Order]
@@ -197,8 +220,6 @@ SELECT TOP (1000) [Fact_Incident_PK]
       ,[Destination_Stroke_Team_Alert_To_Patient_Arrived_At_Destination_In_Seconds]
       ,[Destination_Trauma_General_Team_Alert_To_Patient_Arrived_At_Destination_In_Minutes]
       ,[Destination_Trauma_General_Team_Alert_To_Patient_Arrived_At_Destination_In_Seconds]
-      ,[CAD_Incident_ID_Internal]
-      ,[CAD_ID_FK]
       ,[PSAP_To_First_Defibrillation_In_Minutes]
       ,[PSAP_To_First_Defibrillation_In_Seconds]
       ,[Dispatch_Notified_To_First_Defibrillation_In_Minutes]
@@ -255,52 +276,45 @@ SELECT TOP (1000) [Fact_Incident_PK]
       ,[Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_Range_In_Minutes]
       ,[Incident_Patient_Arrived_At_Destination_To_Unit_Departed_Bedside_Range_In_Minutes_Sort_Order]
       ,[Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_Range_In_Minutes_Sort_Order]
-      ,[Response_Vehicle_Distance_Begin_To_Scene]
-      ,[Response_Vehicle_Distance_Scene_To_Destination]
-      ,[Response_Vehicle_Distance_Destination_To_End]
-      ,[Response_Vehicle_Total_Distance_Begin_To_End]
       ,[Incident_Hours_To_Enter_Record]
       ,[Incident_Minutes_To_Enter_Record]
       ,[Incident_Days_To_Enter_Record]
       ,[Cardiac_Arrest_Estimated_Time_From_Arrest_To_Defibrillation]
       ,[Cardiac_Arrest_Time_Of_Arrest_Prior_To_CPR_In_Minutes]
       ,[Cardiac_Arrest_Time_From_Prior_CPR_To_ALS_In_Minutes]
-      ,[Disposition_Number_Of_Patients_Transported_In_EMS_Unit]
-      ,[Injury_Height_Of_Fall_In_Feet]
       ,[Outcome_First_ED_Systolic_Blood_Pressure]
       ,[Outcome_Total_ICU_Length_Of_Stay_In_Patient_Days]
       ,[Outcome_Total_Patient_Days_Spent_On_Ventilator]
-      ,[Patient_Age_In_Years]
-      ,[Patient_Age_In_Months]
-      ,[Patient_Age_In_Weeks]
-      ,[Patient_Age_In_Days]
-      ,[Patient_Weight_In_Kilograms]
-      ,[Patient_Weight_In_Pounds]
       ,[Patient_Initial_Positive_Stroke_Score_To_Stroke_Alert_In_Minutes]
       ,[Patient_Initial_Positive_Stroke_Score_To_Stroke_Alert_In_Seconds]
-      ,[Injury_Height_Of_Fall_In_Meters]
-      ,[System_ID]
-      ,[ModifiedOn]
-      ,[Dim_IncidentSupplementalQuestions_FK]
-      ,[Dim_IncidentSupplementalQuestions1_FK]
-      ,[Dim_IncidentSupplementalQuestions2_FK]
       ,[Incident_Patient_Last_Known_Well_To_Patient_Arrived_At_Destination_In_Seconds]
       ,[Incident_Patient_Last_Known_Well_To_Patient_Arrived_At_Destination_In_Minutes]
       ,[Unit_Arrived_At_Patient_To_First_12_Lead_Procedure_In_Minutes]
       ,[Unit_Arrived_At_Patient_To_First_12_Lead_Procedure_In_Seconds]
       ,[Unit_Arrived_At_Patient_To_First_12_Lead_ECG_Vitals_Reading_In_Minutes]
       ,[Unit_Arrived_At_Patient_To_First_12_Lead_ECG_Vitals_Reading_In_Seconds]
-      ,[CAD_ID1_FK]
-      ,[CAD_Incident_ID1_Internal]
-      ,[Dim_PatientFluids_FK]
-      ,[Incident_Agency_Short_Name]
-      ,[Incident_Form_Number]
+      ,[CA_APOT_Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_Range_In_Minutes]
+      ,[CA_APOT_Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_In_Minutes_Sort_Order]
+
+
+    --   ,[System_ID] -- IGNORE
+      ,[ModifiedOn]
+      ,[CreatedOn]
+
+      ,[Response_Vehicle_Distance_Begin_To_Scene]
+      ,[Response_Vehicle_Distance_Scene_To_Destination]
+      ,[Response_Vehicle_Distance_Destination_To_End]
+      ,[Response_Vehicle_Total_Distance_Begin_To_End]
+
+      ,[Disposition_Number_Of_Patients_Transported_In_EMS_Unit]
+      ,[Injury_Height_Of_Fall_In_Feet]
+      ,[Injury_Height_Of_Fall_In_Meters]
       ,[print_report_template_id]
+
       ,[Incident_Elite_Viewer_Facility_ID_Internal]
       ,[Incident_Elite_Viewer_State_County_GNIS]
       ,[Incident_Elite_Viewer_City_GNIS]
-      ,[CA_APOT_Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_Range_In_Minutes]
-      ,[CA_APOT_Incident_Patient_Arrived_at_Destination_To_Destination_Patient_Transfer_Of_Care_In_Minutes_Sort_Order]
+
       ,[AreaOfOperation_ID]
       ,[Incident_HIH_Patient_Searched]
       ,[Incident_HIH_Patient_Match_Found]
