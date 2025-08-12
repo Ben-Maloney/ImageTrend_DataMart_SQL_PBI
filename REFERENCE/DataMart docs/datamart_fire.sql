@@ -1,3 +1,6 @@
+-- This file is provided as documentation for ImageTrend's DataMart to query Fire reports
+
+
 CREATE VIEW [dbo].[DSV_Elite_Fire_View] AS SELECT Fact_Fire.*
 
 FROM [DwFire].[Fact_Fire]
@@ -60,7 +63,7 @@ FULL JOIN [DwFire].[Dim_Fire_CAD] AS [Dim_Fire_CAD] ON [Fact_Fire].[CAD_ID_FK] =
 LEFT JOIN [DwFire].[Bridge_FireCAD_Apparatus] AS [Bridge_FireCAD_Apparatus] ON [Dim_Fire_CAD].[Dim_Fire_CAD_PK] = [Bridge_FireCAD_Apparatus].[Dim_Fire_CAD_PK]
 LEFT JOIN [DwFire].[Dim_Fire_CAD_Apparatus] AS [Dim_Fire_CAD_Apparatus] ON [Bridge_FireCAD_Apparatus].[Bridge_FireCAD_Apparatus_PK] = [Dim_Fire_CAD_Apparatus].[Dim_Fire_CAD_Apparatus_PK]
 
-
+-- IGNORE PERMISSIONS
 --LEFT JOIN [DwFire].[Dim_Permission_AllFireAgency] AS [Dim_Permission_AllFireAgency] ON [Fact_Fire].[Dim_Agency_FK] = [Dim_Permission_AllFireAgency].[Dim_Agency_PK] and Dim_Permission_AllFireAgency.Performer_ID_Internal = '#getUserID()#'
 --LEFT JOIN [DwFire].[Dim_Permission_MyFire] AS [Dim_Permission_MyFire] ON [Fact_Fire].[Fact_Fire_PK] = [Dim_Permission_MyFire].[Fact_Fire_PK] and Dim_Permission_MyFire.Performer_ID_Internal = '#getUserID()#'
 --LEFT JOIN [DwFire].[Dim_Permission_OtherFire] AS [Dim_Permission_OtherFire] ON [Fact_Fire].[Fact_Fire_PK] = [Dim_Permission_OtherFire].[Fact_Fire_PK] and Dim_Permission_Other-Fire.Performer_ID_Internal = '#getUserID()#'

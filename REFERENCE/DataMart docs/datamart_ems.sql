@@ -1,3 +1,6 @@
+-- This file is provided as documentation for ImageTrend's DataMart to query EMS reports
+
+
 SELECT Fact_Incident.*
 FROM [DwEms].[Fact_Incident]
 LEFT JOIN [DwEms].[Bridge_Incident_Procedure] AS [Bridge_Incident_Procedure] ON [Fact_Incident].[Fact_Incident_PK] = [Bridge_Incident_Procedure].[Fact_Incident_PK]

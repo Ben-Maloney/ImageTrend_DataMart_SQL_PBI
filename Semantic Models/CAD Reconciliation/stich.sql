@@ -7,7 +7,11 @@
 SELECT
     -- Fact_CAD columns
       f.[Fact_CAD_PK]
+
+    -- NOTE: These two are the SAME (or appear to be the same!) :)
     , f.[CAD_ID_Internal]
+    , dcd.[CAD_ID_Internal] AS Dim_CAD_Dispatch_CAD_ID_Internal  -- Alias to avoid name clash
+
     -- , f.[Dim_CAD_FK]
     -- , f.[Dim_CAD_Dispatch_FK]
     -- , f.[Dim_CAD_Disposition_FK]
@@ -178,7 +182,7 @@ SELECT
 
     -- Dim_CAD_Dispatch Columns
     , dcd.[Dim_CAD_Dispatch_PK]
-    , dcd.[CAD_ID_Internal] AS Dim_CAD_Dispatch_CAD_ID_Internal  -- Alias to avoid name clash
+    -- , dcd.[CAD_ID_Internal] AS Dim_CAD_Dispatch_CAD_ID_Internal  -- Alias to avoid name clash
     , dcd.[Unit_Dispatched_CAD_Record_ID]
     , dcd.[CAD_Complaint_Reported_By_Dispatch]
     -- EMD card thing is taken from here... NOTE: TODO:
