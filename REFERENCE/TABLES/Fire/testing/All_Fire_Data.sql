@@ -27,4 +27,4 @@ SELECT
 FROM f
 FULL OUTER JOIN d
   ON f.[CAD_ID_FK] = d.[Dim_Fire_CAD_PK]
-;
+;16
