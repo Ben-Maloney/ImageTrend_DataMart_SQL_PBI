@@ -2,7 +2,7 @@ SELECT TOP (1000)
 
       [Dim_CAD_PK]
 
-      -- ,[CAD_CAD_ID] -- USELESS eg "RP25-9110820250813:09:01:27E19"
+      ,[CAD_CAD_ID] -- VERY USEFULL! eg "RP25-9110820250813:09:01:27E19"
       -- ,[CAD_Agency_ID]
 
       ,[CAD_Incident_Number] -- RP NUMBER eg "RP25-91208"
@@ -90,7 +90,7 @@ SELECT TOP (1000)
       -- ,[CAD_Response_Narrative] -- appears to all be NULL
       -- ,[CAD_Response_Vehicle_Type] -- appears to all be NULL
       -- ,[CAD_Response_Vehicle_Dispatch_Location] -- appears to all be NULL
-      -- ,[CAD_Incident_Unit_Dispatched_CAD_Record_ID] -- USELESS eg "RP25-9120920250813:01:41:28M1329"
+      -- ,[CAD_Incident_Unit_Dispatched_CAD_Record_ID] -- VERY USEFULL! eg "RP25-9120920250813:01:41:28M1329"
 
       ,[CAD_EMD_Card_Number] -- PROQA CALL TYPE
       ,[CAD_Incident_Initial_CAD_Dispatch_Code]

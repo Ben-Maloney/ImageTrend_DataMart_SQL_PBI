@@ -6,14 +6,14 @@ WITH ProceduresCTE AS (
         STRING_AGG(
             CONVERT(VARCHAR(MAX), 
                 CASE 
-                    WHEN Dim_Procedure.Procedure_Performed_Description NOT LIKE 'ECG - %' 
+                    WHEN Dim_Procedure.Procedure_Performed_Description NOT LIKE 'ECG - %' AND Dim_Procedure.Procedure_Performed_Description NOT LIKE 'Moving patient%' AND Dim_Procedure.Procedure_Performed_Description NOT LIKE 'ECG - %' AND Dim_Procedure.Procedure_Performed_Description NOT LIKE '12 lead%'
                     THEN Dim_Procedure.Procedure_Performed_Description 
                 END
             ), ', ') AS proc_desc
     FROM [Elite_DWPortland].[DwEms].[Bridge_Incident_Procedure]
     INNER JOIN [Elite_DWPortland].[DwEms].[Dim_Procedure]
         ON [Bridge_Incident_Procedure].[Dim_Procedure_PK] = [Dim_Procedure].[Dim_Procedure_PK]
-    WHERE Dim_Procedure.Procedure_Performed_Description NOT LIKE 'ECG - %'
+    -- WHERE Dim_Procedure.Procedure_Performed_Description NOT LIKE 'ECG - %'
     GROUP BY Fact_Incident_PK
 ),
 

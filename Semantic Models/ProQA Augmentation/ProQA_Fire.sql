@@ -48,19 +48,19 @@ GREATEST(
             Apparatus_Resource_Arrival_At_Hospital_Time,
             Apparatus_Resource_In_Quarters_Date_Time
         )) / 60 AS VARCHAR) + ':' +
-    RIGHT('0' + CAST(DATEDIFF(SECOND, Apparatus_Resource_Dispatch_Date_Time, 
-        GREATEST(
-            Apparatus_Resource_Dispatch_Date_Time,
-            Appratus_Resource_Enroute_Date_Time,
-            Apparatus_Resource_Arrival_Date_Time,
-            Apparatus_Resource_Clear_Date_Time,
-            Apparatus_Resource_In_Service_Date_Time,
-            Apparatus_Resource_Staging_Date_Time,
-            Apparatus_Resource_Leave_Scene_Date_Time,
-            Apparatus_Resource_Arrival_At_Hospital_Time,
-            Apparatus_Resource_In_Quarters_Date_Time
-        )) % 60 AS VARCHAR), 2) 
-    as Total_Time_MM_SS,
+        RIGHT('0' + CAST(DATEDIFF(SECOND, Apparatus_Resource_Dispatch_Date_Time, 
+            GREATEST(
+                Apparatus_Resource_Dispatch_Date_Time,
+                Appratus_Resource_Enroute_Date_Time,
+                Apparatus_Resource_Arrival_Date_Time,
+                Apparatus_Resource_Clear_Date_Time,
+                Apparatus_Resource_In_Service_Date_Time,
+                Apparatus_Resource_Staging_Date_Time,
+                Apparatus_Resource_Leave_Scene_Date_Time,
+                Apparatus_Resource_Arrival_At_Hospital_Time,
+                Apparatus_Resource_In_Quarters_Date_Time
+            )) % 60 AS VARCHAR), 2) 
+        as Total_Time_MM_SS,
 
     DATEDIFF(
         SECOND,
@@ -77,6 +77,26 @@ GREATEST(
             Apparatus_Resource_In_Quarters_Date_Time
         )
     ) as Total_Seconds,
+
+    DATEADD(
+        SECOND,
+        DATEDIFF(
+            SECOND,
+            Apparatus_Resource_Dispatch_Date_Time,
+            GREATEST(
+                Apparatus_Resource_Dispatch_Date_Time,
+                Appratus_Resource_Enroute_Date_Time,
+                Apparatus_Resource_Arrival_Date_Time,
+                Apparatus_Resource_Clear_Date_Time,
+                Apparatus_Resource_In_Service_Date_Time,
+                Apparatus_Resource_Staging_Date_Time,
+                Apparatus_Resource_Leave_Scene_Date_Time,
+                Apparatus_Resource_Arrival_At_Hospital_Time,
+                Apparatus_Resource_In_Quarters_Date_Time
+            )
+        ),
+        CAST('00:00:00' as time(0))
+    ) as Total_Duration,
 
 
     -- ROW_NUMBER() OVER (

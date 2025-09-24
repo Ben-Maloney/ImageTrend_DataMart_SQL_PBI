@@ -6,6 +6,14 @@ let
     #"PR&F Rode in with AMR" = Table.AddColumn(#"PF&R Transported", "PF&R Rode in with AMR", each if [ProQA_Med.Transport_Disposition] = "Transport by Another EMS Unit, with a Member of This Crew" then 1 else 0),
     #"Patient Contact" = Table.AddColumn(#"PR&F Rode in with AMR", "Patient Contact", each if [ProQA_Med.RP_ems] <> null then 1 else 0),
     #"Arrived on scene" = Table.AddColumn(#"Patient Contact", "Arrived", each if [OS] <> null then 1 else 0),
-    #"determine 'result' or ultimate disposition" = Table.AddColumn(#"Arrived on scene", "result", each if [PFR Transported] = 1 then "PF&R Transported" else if [#"PF&R Rode in with AMR"] = 1 then "PF&R Rode in with AMR" else if [Patient treated] = 1 then "Patient Treated" else if [Patient Contact] = 1 then "Patient Contact" else if [Arrived] = 1 then "Cancel OS" else "Cancel PTA")
+    #"determine 'result' or ultimate disposition" = Table.AddColumn(#"Arrived on scene", "result", each 
+        if [PFR Transported] = 1 then "PF&R Transported" 
+        else if [#"PF&R Rode in with AMR"] = 1 then "PF&R Rode in with AMR" 
+        else if [Patient treated] = 1 then "Patient Treated" 
+        else if [Patient Contact] = 1 then "Patient Contact" 
+        else if [Arrived] = 1 and [Total_Seconds] <> null and [Total_Seconds] >= 900 then "Extended"
+        else if [Arrived] = 1 then "Cancel OS" 
+        else "Cancel PTA")
 in
     #"determine 'result' or ultimate disposition"
+
