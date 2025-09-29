@@ -9,51 +9,50 @@
   - RP_Number (from CAD)
   - Unit_Call_Sign (from apparatus resource)
   - Basic_Incident_Primary_Narrative (from NFIRS Basic)
- Sources used (no filters applied):
-  - [Elite_DWPortland].[DwFire].[Fact_Fire] as f
-  - [Elite_DWPortland].[DwFire].[Dim_Fire_CAD] as cad
-  - [Elite_DWPortland].[DwFire].[Dim_Basic] as b
+ Sources used (minimal filters applied for data quality):
   - [Elite_DWPortland].[DwFire].[Dim_ApparatusResources] as ar
+  - [Elite_DWPortland].[DwFire].[Dim_Basic] as b
  Notes:
-  - The apparatus (UNIT) comes from the first-arriving apparatus via f.FirstApparatusArrived_Dim_ApparatusResources_FK.
-  - The time used is COALESCE(ar.Apparatus_Resource_Dispatch_Date_Time, cad.CAD_Basic_Incident_Alarm_Time).
+  - We operate at the unit-response grain using Dim_ApparatusResources as ground truth.
+  - The time used is ar.Apparatus_Resource_Dispatch_Date_Time (non-null enforced below).
 ------------------------------------------------------------------------------
 */
 
-SELECT TOP (100)
-    -- Incident type
-    cad.[CAD_Initial_CAD_Incident_Type_Description] AS Incident_Type,
+SELECT TOP (1000)
+    -- Incident type (from NFIRS Basic)
+    b.[Basic_EFD_Card_Number] AS Incident_Type,
 
-    -- Constructed {RP}{YYYYMMDD:HH:MM:SS}{UNIT}
+    -- Constructed {BasicIncidentNumber}{YYYYMMDD:HH:MM:SS}{Apparatus_ID}
     CONCAT(
-        cad.[CAD_CAD_ID],
-        CASE WHEN COALESCE(ar.[Apparatus_Resource_Dispatch_Date_Time], cad.[CAD_Basic_Incident_Alarm_Time]) IS NOT NULL
-             THEN CONVERT(char(8), COALESCE(ar.[Apparatus_Resource_Dispatch_Date_Time], cad.[CAD_Basic_Incident_Alarm_Time]), 112)
-                  + ':' + CONVERT(char(8), COALESCE(ar.[Apparatus_Resource_Dispatch_Date_Time], cad.[CAD_Basic_Incident_Alarm_Time]), 108)
-             ELSE ''
-        END,
-        COALESCE(ar.[Apparatus_Resource_Vehicle_Call_Sign], '')
-    ) AS Constructed_RP_Time_Unit,
+        b.[Basic_Incident_Number],
+        CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 112)
+            + ':' + CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 108),
+        ar.[Apparatus_Resource_ID]
+    ) AS Constructed_Incident_Time_UnitID,
 
     -- Unit call sign (from apparatus resource)
     ar.[Apparatus_Resource_Vehicle_Call_Sign] AS Unit_Call_Sign,
 
     -- Date (from the time used above)
-    CAST(COALESCE(ar.[Apparatus_Resource_Dispatch_Date_Time], cad.[CAD_Basic_Incident_Alarm_Time]) AS date) AS Event_Date,
+    CAST(ar.[Apparatus_Resource_Dispatch_Date_Time] AS date) AS Event_Date,
 
-    -- RP number
-    cad.[CAD_CAD_ID] AS RP_Number,
+    -- Incident number (from NFIRS Basic)
+    b.[Basic_Incident_Number] AS Incident_Number,
+    b.[Basic_Incident_Primary_Narrative] AS Basic_Incident_Primary_Narrative,
+    ar.[Apparatus_Resource_Narrative] AS Apparatus_Resource_Narrative,
+    b.[Basic_Incident_Type] as Incident_Type,
+    b.[Basic_Incident_Type_Code] as Incident_Type_Code
 
-    -- Narrative from NFIRS Basic
-    b.[Basic_Incident_Primary_Narrative] AS Basic_Incident_Primary_Narrative
-
-FROM [Elite_DWPortland].[DwFire].[Fact_Fire] AS f
-LEFT JOIN [Elite_DWPortland].[DwFire].[Dim_Fire_CAD] AS cad
-    ON f.[CAD_ID_FK] = cad.[Dim_Fire_CAD_PK]
+FROM [Elite_DWPortland].[DwFire].[Dim_ApparatusResources] AS ar
 LEFT JOIN [Elite_DWPortland].[DwFire].[Dim_Basic] AS b
-    ON f.[Dim_Basic_FK] = b.[Dim_Basic_PK]
-LEFT JOIN [Elite_DWPortland].[DwFire].[Dim_ApparatusResources] AS ar
-    ON f.[FirstApparatusArrived_Dim_ApparatusResources_FK] = ar.[Dim_ApparatusResources_PK]
+    ON ar.[Incident_ID_Internal] = b.[Incident_ID_Internal]
 
-ORDER BY cad.[Dim_Fire_CAD_PK] DESC
+WHERE
+    b.Basic_Agency_ID_Internal = '6dc7ba46-6723-eb11-a95e-001dd8b72424'
+    -- AND ar.[Apparatus_Resource_Dispatch_Date_Time] IS NOT NULL
+    -- AND ar.[Apparatus_Resource_ID] IS NULL
+    -- AND b.[Basic_Incident_Number] IS NOT NULL
+    -- AND ar.[Apparatus_Resource_Vehicle_Call_Sign] IS NULL
+    -- AND LTRIM(RTRIM(ar.[Apparatus_Resource_Vehicle_Call_Sign])) <> ''
 
+ORDER BY ar.[Apparatus_Resource_Dispatch_Date_Time] DESC, ar.[Dim_ApparatusResources_PK] DESC

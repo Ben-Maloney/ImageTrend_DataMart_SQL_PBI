@@ -11,6 +11,7 @@ SELECT
     -- NOTE: These two are the SAME (or appear to be the same!) :)
     , f.[CAD_ID_Internal]
     , dcd.[CAD_ID_Internal] AS Dim_CAD_Dispatch_CAD_ID_Internal  -- Alias to avoid name clash
+    , de.[CAD_CAD_ID] AS CAD_CAD_ID
 
     -- , f.[Dim_CAD_FK]
     -- , f.[Dim_CAD_Dispatch_FK]
@@ -35,7 +36,7 @@ SELECT
     -- NOTE: THIS IS THE REGULAR EXPRESSION FOR CALL TYPE DETERMINATE
     , dcd.[CAD_EMD_Card_Number]
 
-    ,LEFT(CAD_EMD_Card_Number, PATINDEX('%[^0-9]%', CAD_EMD_Card_Number + 'A') - 1) as ProQA_CARD
+    , LEFT(dcd.[CAD_EMD_Card_Number], PATINDEX('%[^0-9]%', dcd.[CAD_EMD_Card_Number] + 'A') - 1) as ProQA_CARD
 
 
     -- , f.[ModifiedOn]
@@ -223,8 +224,7 @@ SELECT
     , fi.[Dim_Dispatch_Acknowledged_TimeOfDay_FK]
     , fi.[Dim_Unit_Enroute_Date_FK]
     , fi.[Dim_Unit_Enroute_TimeOfDay_FK]
-    , fi.[Dim_Unit_Arrived_On_Scene_Date_FK]
-    , fi.[Dim_Unit_Arrived_On_Scene_TimeOfDay_FK]
+    , fi.[Dim_Unit_Arrived_On_Scene_Date_FK]    , fi.[Dim_Unit_Arrived_On_Scene_TimeOfDay_FK]
     , fi.[Dim_Arrived_At_Patient_Date_FK]
     , fi.[Dim_Arrived_At_Patient_TimeOfDay_FK]
     , fi.[Dim_Transfer_Of_Patient_Date_FK]
@@ -260,29 +260,29 @@ SELECT
 
     , DATEDIFF(
         SECOND,
-        CAD_Unit_Notified_By_Dispatch_Date_Time,
+        d.[CAD_Unit_Notified_By_Dispatch_Date_Time],
         GREATEST(
-            CAD_Unit_Notified_By_Dispatch_Date_Time,
-            CAD_Unit_En_Route_Date_Time,
-            CAD_Unit_Arrived_On_Scene_Date_Time,
-            CAD_Unit_Canceled_Date_Time,
-            CAD_Unit_Left_Scene_Date_Time,
+            d.[CAD_Unit_Notified_By_Dispatch_Date_Time],
+            d.[CAD_Unit_En_Route_Date_Time],
+            d.[CAD_Unit_Arrived_On_Scene_Date_Time],
+            d.[CAD_Unit_Canceled_Date_Time],
+            d.[CAD_Unit_Left_Scene_Date_Time],
 
-            CAD_Unit_Back_In_Service_Date_Time,
-            CAD_Unit_Back_At_Home_Location_Date_Time
+            d.[CAD_Unit_Back_In_Service_Date_Time],
+            d.[CAD_Unit_Back_At_Home_Location_Date_Time]
         )
     ) as Total_Seconds
 
     , DATEDIFF(
         SECOND,
-        CAD_Unit_Arrived_On_Scene_Date_Time,
+        d.[CAD_Unit_Arrived_On_Scene_Date_Time],
         GREATEST(
-            CAD_Unit_Arrived_On_Scene_Date_Time,
-            CAD_Unit_Canceled_Date_Time,
-            CAD_Unit_Left_Scene_Date_Time,
+            d.[CAD_Unit_Arrived_On_Scene_Date_Time],
+            d.[CAD_Unit_Canceled_Date_Time],
+            d.[CAD_Unit_Left_Scene_Date_Time],
 
-            CAD_Unit_Back_In_Service_Date_Time,
-            CAD_Unit_Back_At_Home_Location_Date_Time
+            d.[CAD_Unit_Back_In_Service_Date_Time],
+            d.[CAD_Unit_Back_At_Home_Location_Date_Time]
         )
     ) as Total_OnScene_Seconds
 
@@ -302,6 +302,10 @@ LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_Incident] di
 -- Dim_CAD Columns
 LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD] d
     ON f.Dim_CAD_FK = d.Dim_CAD_PK
+
+-- Dim_EMS_CAD for CAD_CAD_ID and incident-level identifiers
+LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_EMS_CAD] de
+    ON d.[Dim_CAD_PK] = de.[Dim_CAD_PK]
 
 -- Dim_CAD_Response Columns
 LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD_Response] r
@@ -323,8 +327,7 @@ LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD_Dispatch] dcd
 */
 WHERE
     d.CAD_Response_EMS_Agency_Name LIKE 'Portland%'
-    AND CAD_Unit_Notified_By_Dispatch_Date_Time >= '2025-01-01'
-
+    AND d.[CAD_Unit_Notified_By_Dispatch_Date_Time] >= '2025-01-01'
 
 
 --NOTE: only for testing

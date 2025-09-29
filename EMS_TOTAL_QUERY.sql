@@ -1,2 +1,0 @@
--- This query should use Dim_EMS_CAD to see ALL 911 calls - sorted only for Portland Fire
--- it should then join in Fact_Incident (which records ePCRs) - also filtered for Portland Fire
