@@ -135,7 +135,8 @@ SELECT TOP (1000)
       ,[ModifiedOn]
   FROM [Elite_DWPortland].[DwEms].[Dim_EMS_CAD]
 
-WHERE [CAD_Agency_ID] = '6dc7ba46-6723-eb11-a95e-001dd8b72424'
-  -- AND CAD_Scene_Incident_Street_Address2 <> NULL
+WHERE
+  [CAD_Agency_ID] = '6dc7ba46-6723-eb11-a95e-001dd8b72424'  
+  -- AND [CAD_EMS_Agency_Name] = 'Portland Fire & Rescue - EMS'
 
 ORDER BY Dim_CAD_PK desc

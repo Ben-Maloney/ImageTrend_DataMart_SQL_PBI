@@ -85,4 +85,7 @@ SELECT TOP (1000) [Dim_Fire_CAD_PK]
 
   FROM [Elite_DWPortland].[DwFire].[Dim_Fire_CAD]
 
+  WHERE
+    [CAD_Basic_Incident_Agency_Name] = 'Portland Fire & Rescue - EMS'
+
   ORDER BY Dim_Fire_CAD_PK DESC

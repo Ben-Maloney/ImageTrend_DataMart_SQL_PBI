@@ -1,12 +1,53 @@
-/*
-------------------------------------------------------------------------------
+WITH FireAR AS (
+  SELECT
+    ar.[Dim_ApparatusResources_PK],
+    b.[Basic_Incident_Number],
+    ar.[Apparatus_Resource_ID],
+    ar.[Apparatus_Resource_Vehicle_Call_Sign],
+    ar.[Apparatus_Resource_Dispatch_Date_Time],
+    CAST(ar.[Apparatus_Resource_Dispatch_Date_Time] AS date) AS Fire_Event_Date,
+    b.[Basic_Incident_Associated_EMS_Incident_Number] AS Fire_RP,
+    UPPER(LTRIM(RTRIM(b.[Basic_Incident_Associated_EMS_Incident_Number]))) AS Fire_RP_Norm,
+    UPPER(LTRIM(RTRIM(ar.[Apparatus_Resource_Vehicle_Call_Sign]))) AS Fire_Unit_Norm,
+    CONCAT(
+      UPPER(LTRIM(RTRIM(b.[Basic_Incident_Associated_EMS_Incident_Number]))),
+      '|',
+      Apparatus_Resource_Vehicle_Call_Sign
+    ) AS Fire_RP_UnitKey,
+    CONCAT(
+      CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 112)
+        + ':' + CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 108),
+      '|',
+      UPPER(LTRIM(RTRIM(ar.[Apparatus_Resource_Vehicle_Call_Sign])))
+    ) AS Constructed_UnitDispatch
+  FROM [Elite_DWPortland].[DwFire].[Dim_ApparatusResources] AS ar
+  LEFT JOIN [Elite_DWPortland].[DwFire].[Dim_Basic] AS b
+    ON ar.[Incident_ID_Internal] = b.[Incident_ID_Internal]
+  WHERE b.[Basic_Agency_ID_Internal] = '6dc7ba46-6723-eb11-a95e-001dd8b72424'
+    AND b.[Basic_Incident_Associated_EMS_Incident_Number] IS NOT NULL
+)
+  SELECT
+    --EMS/Fire RP+Unit keys for reconciliation
+    CONCAT(
+        UPPER(LTRIM(RTRIM(r.[CAD_Incident_Number]))),
+        '|',
+        UPPER(LTRIM(RTRIM(r.[CAD_Response_EMS_Unit_Call_Sign])))
+    ) AS EMS_RP_UnitKey
+
+    , far.[Fire_RP_UnitKey] AS Fire_RP_UnitKey
+    , CAST(COALESCE(d.[CAD_Unit_Notified_By_Dispatch_Date_Time], d.[CAD_Unit_En_Route_Date_Time], d.[CAD_Unit_Arrived_On_Scene_Date_Time]) AS date) AS EMS_Event_Date
+    , far.[Fire_Event_Date]
+    -- , far.[Apparatus_Resource_Vehicle_Call_Sign] AS Fire_Unit_Call_Sign
+    , far.[Apparatus_Resource_ID] AS Fire_Apparatus_Resource_ID
+    , far.[Basic_Incident_Number] AS Fire_Basic_Incident_Number
+
+    , r.[CAD_Incident_Number] as RP_NUMBER
 
 
-------------------------------------------------------------------------------
-*/
-SELECT
+    , r.[CAD_EMS_Response_Number]
+
     -- Fact_CAD columns
-      f.[Fact_CAD_PK]
+    , f.[Fact_CAD_PK]
 
     -- NOTE: These two are the SAME (or appear to be the same!) :)
     , f.[CAD_ID_Internal]
@@ -106,10 +147,10 @@ SELECT
 
     -- Dim_CAD_Response columns
     -- , r.[Dim_CAD_Response_PK]
-    , r.[CAD_Incident_Number] as RP_NUMBER
     , r.[CAD_Beginning_Odometer_Reading_Of_Responding_Vehicle]
     , r.[CAD_Response_Vehicle_Dispatch_Location]
     , r.[CAD_Response_EMS_Unit_Call_Sign]
+
     , r.[CAD_Response_EMS_Vehicle_Unit_Number]
     -- , r.[CAD_Ending_Odometer_Reading_Of_Responding_Vehicle]
     -- , r.[CAD_On_Scene_Odometer_Reading_Of_Responding_Vehicle]
@@ -117,7 +158,6 @@ SELECT
     -- , r.[CAD_Response_Primary_Role_Of_Unit]
     -- , r.[CAD_Response_Mode_To_Scene]
     -- , r.[CAD_Response_Type_Of_Service_Requested]
-    , r.[CAD_EMS_Response_Number]
     -- , r.[CAD_Response_EMS_Agency_Number]
     , r.[CAD_Response_EMS_Agency_Name]
     -- , r.[CAD_Response_Standby_Purpose]
@@ -242,22 +282,24 @@ SELECT
     -- , fi.[Dim_Unit_Back_At_Home_TimeOfDay_FK]
 
 
-    , fi.[CreatedOn] AS Fact_Incident_CreatedOn
 
-    , fi.[Incident_Agency_Short_Name]
-    , fi.[Patient_Age_In_Years]
+    -- INCIDENT LEVEL - DON'T USE RIGHT NOW
+    -- , fi.[CreatedOn] AS Fact_Incident_CreatedOn
 
-    , fi.[Dim_Narrative_FK]
-    , fi.[Dim_Incident_One_To_One_PK]
-    , fi.[CAD_Incident_ID_Internal]
-    , fi.[CAD_ID_FK]
-    , fi.[CAD_ID1_FK]
-    , fi.[CAD_Incident_ID1_Internal]
-    , fi.[Dim_IncidentSupplementalQuestions_FK]
-    , fi.[Dim_IncidentSupplementalQuestions1_FK]
-    , fi.[Dim_IncidentSupplementalQuestions2_FK]
+    -- , fi.[Incident_Agency_Short_Name]
+    -- , fi.[Patient_Age_In_Years]
 
-    , di.[Incident_Status]
+    -- , fi.[Dim_Narrative_FK]
+    -- , fi.[Dim_Incident_One_To_One_PK]
+    -- , fi.[CAD_Incident_ID_Internal]
+    -- , fi.[CAD_ID_FK]
+    -- , fi.[CAD_ID1_FK]
+    -- , fi.[CAD_Incident_ID1_Internal]
+    -- , fi.[Dim_IncidentSupplementalQuestions_FK]
+    -- , fi.[Dim_IncidentSupplementalQuestions1_FK]
+    -- , fi.[Dim_IncidentSupplementalQuestions2_FK]
+
+    -- , di.[Incident_Status]
 
     , DATEDIFF(
         SECOND,
@@ -287,17 +329,32 @@ SELECT
         )
     ) as Total_OnScene_Seconds
 
+    -- -- Constructed {BasicIncidentNumber}{YYYYMMDD:HH:MM:SS}{Apparatus_ID}
+    -- CONCAT(
+    --     b.[Basic_Incident_Number],
+    --     CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 112)
+    --         + ':' + CONVERT(char(8), ar.[Apparatus_Resource_Dispatch_Date_Time], 108),
+    --     ar.[Apparatus_Resource_ID]
+    -- ) AS Constructed_Incident_Time_UnitID,
+    -- NOTE: The above is a special, unique column that can be used to match up DwEms CAD table records with that of the same in DwFire.  The above demonstrates how to do this in DwFire.
+    -- EMS equivalent constructed key is already selected above as Constructed_Incident_Time_UnitID using:
+    -- CONCAT(
+    --   r.[CAD_Incident_Number],
+    --   CONVERT(char(8), d.[CAD_Unit_Notified_By_Dispatch_Date_Time], 112) + ':' + CONVERT(char(8), d.[CAD_Unit_Notified_By_Dispatch_Date_Time], 108),
+    --   r.[CAD_Response_EMS_Unit_Call_Sign]
+    -- )
+
 
 
 FROM [Elite_DWPortland].[DwEms].[Fact_CAD] f
 
--- Fact_Incident Columns
-LEFT JOIN [Elite_DWPortland].[DwEms].[Fact_Incident] fi
-    ON f.CAD_ID_Internal = fi.CAD_Incident_ID_Internal
+-- -- Fact_Incident Columns
+-- LEFT JOIN [Elite_DWPortland].[DwEms].[Fact_Incident] fi
+--     ON f.CAD_ID_Internal = fi.CAD_Incident_ID_Internal
 
--- Dim_Incident Columns
-LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_Incident] di
-    ON fi.Dim_Incident_FK = di.Dim_Incident_PK
+-- -- Dim_Incident Columns
+-- LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_Incident] di
+--     ON fi.Dim_Incident_FK = di.Dim_Incident_PK
 
 
 -- Dim_CAD Columns
@@ -320,6 +377,14 @@ LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD_Scene] s
 LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD_Dispatch] dcd
     ON f.Dim_CAD_Dispatch_FK = dcd.Dim_CAD_Dispatch_PK
 
+-- Join to Fire ApparatusResources CTE using RP+Unit constructed key
+LEFT JOIN FireAR far
+    ON far.[Fire_RP_UnitKey] = CONCAT(
+        UPPER(LTRIM(RTRIM(r.[CAD_Incident_Number]))),
+        '|',
+        UPPER(LTRIM(RTRIM(r.[CAD_Response_EMS_Unit_Call_Sign])))
+    )
+
 
 /*
 #####################################################################
@@ -329,6 +394,7 @@ LEFT JOIN [Elite_DWPortland].[DwEms].[Dim_CAD_Dispatch] dcd
 WHERE
     d.CAD_Response_EMS_Agency_Name LIKE 'Portland%'
     AND d.[CAD_Unit_Notified_By_Dispatch_Date_Time] >= '2025-01-01'
+    AND r.[CAD_Incident_Number] IS NOT NULL
 
 
 --NOTE: only for testing
