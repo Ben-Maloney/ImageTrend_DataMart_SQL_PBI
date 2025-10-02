@@ -1,0 +1,1 @@
+This report attempts to match DwEms schema's list of ePCRs with DwFire's NFIRS fire reports using the ApparatusResources "unit response" level data to provide a more complete picture of all reporting done for a given incident.
